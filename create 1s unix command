@@ -1,0 +1,33 @@
+# slot-A-os
+#include <dirent.h>
+#include <stdio.h>
+#include <sys/stat.h>
+
+int main(int argc, char *argv[]) {
+  DIR *d;
+  struct dirent *dir;
+  struct stat statbuf;
+  char *dir_name = ".";  // default to current directory
+
+  if (argc == 2) {
+    dir_name = argv[1];
+  }
+
+  d = opendir(dir_name);
+  if (d == NULL) {
+    perror("Error opening directory");
+    return 1;
+  }
+
+  while ((dir = readdir(d)) != NULL) {
+    stat(dir->d_name, &statbuf);
+    if (S_ISDIR(statbuf.st_mode)) {
+      printf("%s/\n", dir->d_name);
+    } else {
+      printf("%s\n", dir->d_name);
+    }
+  }
+
+  closedir(d);
+  return 0;
+}
